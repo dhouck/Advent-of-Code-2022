@@ -29,7 +29,15 @@ fn part_a(input: impl BufRead, output: &mut OutputFile) -> Result<()> {
 }
 
 fn part_b(input: impl BufRead, output: &mut OutputFile) -> Result<()> {
-    unimplemented!()
+    let elves = parse_input(input)?;
+    // println!("{:?}", elves);
+    let mut sorted: Vec<Calories> = elves.iter()
+        .map(|l| l.iter().sum::<Calories>())
+        .collect();
+    sorted.sort_by_key(|&calories|std::cmp::Reverse(calories));
+    let top_3_calories: Calories = sorted[..3].iter().sum();
+    writeln!(output, "{}", top_3_calories)?;
+    Ok(())
 }
 
 fn main() -> Result<()> {
