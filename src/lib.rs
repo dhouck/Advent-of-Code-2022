@@ -1,4 +1,5 @@
 mod path_or_std;
+pub mod prelude;
 
 use anyhow::Result;
 use clap::{ValueEnum, Parser};

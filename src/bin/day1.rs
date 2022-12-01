@@ -1,6 +1,4 @@
-use aoc2022::*;
-
-use anyhow::Result;
+use aoc2022::prelude::*;
 
 fn main() -> Result<()> {
     let args = get_args()?;
