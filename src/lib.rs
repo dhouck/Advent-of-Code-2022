@@ -1,6 +1,8 @@
 mod path_or_std;
 pub mod prelude;
 
+use std::io::BufReader;
+
 use anyhow::Result;
 use clap::{ValueEnum, Parser};
 use path_or_std::{PathOrStd, InputFile, OutputFile};
@@ -25,7 +27,7 @@ struct CLIArgs {
 #[derive(Debug)]
 pub struct Args {
     pub part: Part,
-    pub input: InputFile,
+    pub input: BufReader<InputFile>,
     pub output: OutputFile,
 }
 
@@ -35,7 +37,7 @@ impl TryFrom<CLIArgs> for Args {
     fn try_from(cli_args: CLIArgs) -> Result<Self, Self::Error> {
         Ok(Args {
             part: cli_args.part,
-            input: cli_args.input.open()?,
+            input: BufReader::new(cli_args.input.open()?),
             output: cli_args.output.create()?
         })
     }
