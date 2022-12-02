@@ -2,9 +2,9 @@ use aoc2022::prelude::*;
 
 #[derive(Copy, Clone, Debug, PartialEq, Eq)]
 enum RPS {
-    Rock = 1,
-    Paper = 2,
-    Scissors = 3,
+    Rock = 0,
+    Paper = 1,
+    Scissors = 2,
 }
 use RPS::*;
 
@@ -16,14 +16,30 @@ enum RoundState {
 }
 
 impl RPS {
+    fn score(self) -> u32 {
+        self as u32 + 1
+    }
+
     fn versus(self, other: RPS) -> RoundState {
         if self == other {
             RoundState::Tie
-        } else if ((self as u32) % 3) + 1 == (other as u32) {
+        } else if self.loses_to() == other {
             RoundState::Loss
         } else {
             RoundState::Win
         }
+    }
+
+    fn loses_to(self) -> RPS {
+        match self {
+            Rock => Paper,
+            Paper => Scissors,
+            Scissors => Rock
+        }
+    }
+
+    fn wins_to(self) -> RPS {
+        self.loses_to().loses_to()
     }
 }
 
@@ -64,7 +80,7 @@ impl Round {
     }
 
     pub fn score(&self) -> u32 {
-        self.me as u32 + self.state() as u32
+        self.me.score() + self.state() as u32
     }
 }
 
