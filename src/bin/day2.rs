@@ -82,6 +82,27 @@ impl Round {
     pub fn score(&self) -> u32 {
         self.me.score() + self.state() as u32
     }
+
+    pub fn from_str_b(s: &str) -> Result<Self> {
+        let Some((first, second)) = s.split_once(' ') else {
+            return Err(anyhow!("Line contains no space character"))
+        };
+
+        let opponent = match first {
+            "A" => Rock,
+            "B" => Paper,
+            "C" => Scissors,
+            _ => return Err(anyhow!("Unknown opponent move")),
+        };
+        let me = match second {
+            "X" => opponent.wins_to(),
+            "Y" => opponent,
+            "Z" => opponent.loses_to(),
+            _ => return Err(anyhow!("Unknown response move")),
+        };
+
+        Ok(Round {opponent, me})
+    }
 }
 
 fn part_a(input: impl BufRead, output: &mut OutputFile) -> Result<()> {
@@ -94,8 +115,12 @@ fn part_a(input: impl BufRead, output: &mut OutputFile) -> Result<()> {
 }
 
 fn part_b(input: impl BufRead, output: &mut OutputFile) -> Result<()> {
-    let _ = (input, output);
-    unimplemented!()
+    let total_score: u32 = input.lines()
+        .map(|line| -> Result<u32> {
+            Ok(Round::from_str_b(&line?)?.score())
+        })
+        .sum::<Result<u32>>()?;
+    Ok(writeln!(output, "{}", total_score)?)
 }
 
 fn main() -> Result<()> {
