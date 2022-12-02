@@ -112,19 +112,12 @@ impl<const P: Part> Round<P> {
     }
 }
 
-fn part_a(input: impl BufRead, output: &mut OutputFile) -> Result<()> {
+fn process<const P: Part>(input: impl BufRead, output: &mut OutputFile) -> Result<()>
+    where Round<P>: FromStr,
+        Error: From<<Round<P> as FromStr>::Err> {
     let total_score: u32 = input.lines()
         .map(|line| -> Result<u32> {
-            Ok(line?.parse::<Round<{Part::A}>>()?.score())
-        })
-        .sum::<Result<u32>>()?;
-    Ok(writeln!(output, "{}", total_score)?)
-}
-
-fn part_b(input: impl BufRead, output: &mut OutputFile) -> Result<()> {
-    let total_score: u32 = input.lines()
-        .map(|line| -> Result<u32> {
-            Ok(line?.parse::<Round<{Part::B}>>()?.score())
+            Ok(line?.parse::<Round<{P}>>()?.score())
         })
         .sum::<Result<u32>>()?;
     Ok(writeln!(output, "{}", total_score)?)
@@ -133,7 +126,7 @@ fn part_b(input: impl BufRead, output: &mut OutputFile) -> Result<()> {
 fn main() -> Result<()> {
     let mut args = get_args()?;
     match args.part {
-        Part::A => part_a(args.input, &mut args.output),
-        Part::B => part_b(args.input, &mut args.output),
+        Part::A => process::<{Part::A}>(args.input, &mut args.output),
+        Part::B => process::<{Part::B}>(args.input, &mut args.output),
     }
 }
