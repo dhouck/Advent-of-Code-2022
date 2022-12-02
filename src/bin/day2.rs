@@ -1,3 +1,6 @@
+#![allow(incomplete_features)]
+#![feature(adt_const_params)]
+
 use aoc2022::prelude::*;
 
 #[derive(Copy, Clone, Debug, PartialEq, Eq)]
@@ -44,12 +47,12 @@ impl RPS {
 }
 
 #[derive(Copy, Clone, Debug)]
-struct Round {
+struct Round<const P: Part> {
     opponent: RPS,
     me: RPS,
 }
 
-impl FromStr for Round {
+impl FromStr for Round<{Part::A}> {
     type Err = Error;
 
     fn from_str(s: &str) -> Result<Self> {
@@ -74,16 +77,10 @@ impl FromStr for Round {
     }
 }
 
-impl Round {
-    pub fn state(&self) -> RoundState {
-        self.me.versus(self.opponent)
-    }
+impl FromStr for Round<{Part::B}> {
+    type Err = Error;
 
-    pub fn score(&self) -> u32 {
-        self.me.score() + self.state() as u32
-    }
-
-    pub fn from_str_b(s: &str) -> Result<Self> {
+    fn from_str(s: &str) -> Result<Self> {
         let Some((first, second)) = s.split_once(' ') else {
             return Err(anyhow!("Line contains no space character"))
         };
@@ -105,10 +102,20 @@ impl Round {
     }
 }
 
+impl<const P: Part> Round<P> {
+    pub fn state(&self) -> RoundState {
+        self.me.versus(self.opponent)
+    }
+
+    pub fn score(&self) -> u32 {
+        self.me.score() + self.state() as u32
+    }
+}
+
 fn part_a(input: impl BufRead, output: &mut OutputFile) -> Result<()> {
     let total_score: u32 = input.lines()
         .map(|line| -> Result<u32> {
-            Ok(line?.parse::<Round>()?.score())
+            Ok(line?.parse::<Round<{Part::A}>>()?.score())
         })
         .sum::<Result<u32>>()?;
     Ok(writeln!(output, "{}", total_score)?)
@@ -117,7 +124,7 @@ fn part_a(input: impl BufRead, output: &mut OutputFile) -> Result<()> {
 fn part_b(input: impl BufRead, output: &mut OutputFile) -> Result<()> {
     let total_score: u32 = input.lines()
         .map(|line| -> Result<u32> {
-            Ok(Round::from_str_b(&line?)?.score())
+            Ok(line?.parse::<Round<{Part::B}>>()?.score())
         })
         .sum::<Result<u32>>()?;
     Ok(writeln!(output, "{}", total_score)?)

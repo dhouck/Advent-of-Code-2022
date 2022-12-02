@@ -7,7 +7,7 @@ use anyhow::Result;
 use clap::{ValueEnum, Parser};
 use path_or_std::{PathOrStd, InputFile, OutputFile};
 
-#[derive(ValueEnum, Copy, Clone, Debug)]
+#[derive(ValueEnum, Copy, Clone, Debug, PartialEq, Eq)]
 pub enum Part {
     A,
     B,
