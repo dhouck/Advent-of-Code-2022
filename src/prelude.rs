@@ -1,5 +1,6 @@
 pub use anyhow::{Error, Result,anyhow};
 pub use std::io::prelude::*;
+pub use std::str::FromStr;
 pub use crate::{Part, Args, get_args};
 pub use crate::path_or_std::{InputFile, OutputFile};
 
